@@ -1,0 +1,8 @@
+{
+    "name": "bullhorn-js",
+    "description": "Provides global pub/sub messaging.",
+    "version": "1.0.0",
+    "dojoBuild": "bullhorn.profile.js",
+    "dependencies": {
+	}
+}
