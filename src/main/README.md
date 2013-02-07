@@ -1,1 +1,0 @@
-A topic-based messaging library.
