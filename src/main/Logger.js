@@ -4,7 +4,7 @@ define([
     /**
      * @class Logger
      * @extends Object
-     * Logger for bullhorn. Provides methods for trace(), debug(), info(), warn() and error().
+     * Simple logger for bullhorn. Provides methods for trace(), debug(), info(), warn() and error().
      * @param {String} logLevel Supported levels are TRACE, DEBUG, INFO, WARN, ERROR
      */
     return function (logLevel, alternateConsole, srcName) {

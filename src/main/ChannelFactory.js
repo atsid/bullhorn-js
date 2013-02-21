@@ -1,3 +1,7 @@
+/**
+ * @class ChannelFactory
+ * Object-Oriented api that supports easier creation of and operations on channels.
+ */
 define([
     "./Channel",
     "./CoreApi",
@@ -33,6 +37,11 @@ define([
                 };
             };
 
+        /**
+         * Given a name of a schema iterate over the resolver array until you find a match.
+         * @param name
+         * @return {*}
+         */
         this.resolveSchema = function (name) {
             var schema;
             resolvers.some(function (res) {
@@ -42,12 +51,29 @@ define([
             return schema;
         };
 
+        /**
+         * CoreApi instance used by this factory exposed.
+         * @type {main.CoreApi}
+         */
         this.coreapi = new CoreApi({resolve: this.resolveSchema});
 
+        /**
+         * Add a resolver method to the internal array used to resolve schemas.
+         * @param newResolver - a function accepting (schemaName) that attempts to map that
+         * name to a schema object.
+         */
         this.addResolver = function (newResolver) {
             resolvers.push(newResolver);
         };
 
+        /**
+         * Retrieve a Channel object based on the passed name, scope and bus.
+         * @param channelName - The name of the channel to retrieve.
+         * @param scope - the scope identifying the subscriber and used as the callback
+         * scope for subscriptions.
+         * @param busName - the optional bus to associate the channel with.
+         * @return {*}
+         */
         this.get = function (channelName, scope, busName) {
             var schema,
                 channel;
@@ -62,6 +88,10 @@ define([
             return channel;
         };
 
+        /**
+         * Turn validation on or off for this factory, delegates to core api.
+         * @param turnOn - boolean
+         */
         this.validate = function (turnOn) {
             var pos = "off";
             if (turnOn) {
