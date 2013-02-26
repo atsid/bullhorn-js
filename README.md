@@ -1,4 +1,4 @@
-# Topic-based Messaging Specification (bullhorn-js)
+# Topic-based Messaging (bullhorn-js)
 
 ##Overview
 
