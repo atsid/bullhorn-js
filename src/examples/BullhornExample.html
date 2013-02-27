@@ -1,6 +1,7 @@
 <!--
 Simple Sample page to demonstrate the use of topic-based messaging with bullhorn.
-
+It retrieves three instances of a channel defined by a schema, publishes on one and
+subscribes on the other two.
 It is intended to be loaded directly from the file system in this directory.
 Most of the code is setting up AMD (which becomes negligible in larger projects).
 -->
@@ -78,17 +79,11 @@ Most of the code is setting up AMD (which becomes negligible in larger projects)
 
 </head>
 <body>
-<div>
-    <button name="Sender">Sender</button>
+    <button name="Sender">Send</button>
     <textarea name="SenderText"></textarea>
-</div>
-<div>
     <div>FirstSubscriber</div>
     <div name="FirstSubscriber">Empty</div>
-</div>
-<div>
     <div>SecondSubscriber</div>
     <div name="SecondSubscriber">Empty</div>
-</div>
 </body>
 </html>
