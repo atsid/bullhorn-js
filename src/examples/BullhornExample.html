@@ -1,5 +1,5 @@
 <!--
-Simple Sample page to demonstrate the use of topic-based messaging with bullhorn.
+Simple sample page to demonstrate the use of topic-based messaging with bullhorn.
 It retrieves three instances of a channel defined by a schema, publishes on one and
 subscribes on the other two.
 It is intended to be loaded directly from the file system in this directory.
@@ -9,7 +9,7 @@ Most of the code is setting up AMD (which becomes negligible in larger projects)
 <html>
 <head>
     <!--
-    Include with script tags because backbone does not use AMD.
+    Include only an amd loader.
     -->
     <script src="./require.js"></script>
     <script>
@@ -54,7 +54,7 @@ Most of the code is setting up AMD (which becomes negligible in larger projects)
                 msg = document.getElementsByName("SenderText")[0],
                 btn = document.getElementsByName("Sender")[0],
 
-                // Retrieve channels for each "scope" wanting operate on the channel
+                // Retrieve channels for each "scope" wanting to operate on the channel
                 originatingChannel = cfact.get("schema/ExampleChannel", msg),
                 receiver1Channel = cfact.get("schema/ExampleChannel", sub1),
                 receiver2Channel = cfact.get("schema/ExampleChannel", sub2);
@@ -69,7 +69,7 @@ Most of the code is setting up AMD (which becomes negligible in larger projects)
                 this.innerHTML = message.text;
             });
 
-            // publish a message on the channel, receivers should
+            // publish a message on the channel, receivers should get it.
             btn.onclick = function (evt) {
                 originatingChannel.publish( { text: msg.value});
             }

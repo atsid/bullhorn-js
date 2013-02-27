@@ -6,7 +6,7 @@ define([
 
     /**
      * @class Validator
-     * Integrates Kris Zyp's reference validator.
+     * Integrates Kris Zyp's reference validator for sample purposes.
      */
     return function () {
         /**
@@ -15,18 +15,18 @@ define([
          * @param {Object} schema schema object in JSONSchema format
          * @param {boolean} resolved If false schema will be resolved by this method. If true
          *      this method will assume this schema has its references already resolved.
-         * @param {boolean} hideError - (Defaults to false)Error will be ignored if true otherwise
-         * an Error will be thrown.  Typically just used with unit tests.
+         * @param {boolean} hideError - (Defaults to false) Error will be ignored if true otherwise
+         * an Error will be thrown.
          *
          * @return {Object} Results object containing a valid property and an array of errors.
          * @throws Error
          */
         this.validate = function (instance, schema, resolved, hideError) {
             var ret = validate.validate(instance, schema);
-            if (ret && !ret.valid) {
+            if (ret && !ret.valid && !hideError) {
                 throw Error("message failed validation.")
             }
-            return true;
+            return ret;
         };
     };
 });
