@@ -8,5 +8,7 @@ define([
     Logger,
     module
 ) {
-    return new Logger(module.config().logLevel || "warn");
+    var config = module.config(),
+        logLevel = config && config.logLevel;
+    return new Logger(logLevel || "warn");
 });
