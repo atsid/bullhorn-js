@@ -1,7 +1,7 @@
 var profile = (function () {
     var copyOnly = function (filename, mid) {
             var list = {
-                "bullhorn-js/bullhorn.profile": true,
+                "bullhorn-js/profile.js": true,
                 "bullhorn-js/package.json": true
             };
             return list.hasOwnProperty(mid);

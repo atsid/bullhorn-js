@@ -5,15 +5,14 @@
  * and can be used independently of it.
  */
 define([
-    "./Logger",
+    "./log",
     "./Validator"
 ], function (
-    Logger,
+    log,
     Validator
 ) {
 
-    var logger = new Logger("info"),
-        validator = new Validator();
+    var validator = new Validator();
 
     return function (config) {
 
@@ -80,7 +79,7 @@ define([
          */
         this.validatingPublish = function (busName, channelName, message, completionCallback, callbackScope) {
             var channelSchema = this.config.resolve(channelName);
-            logger.info("Validating message: " + message + " for channel: " + channelName);
+            log.debug("Validating message for channel [" + channelName + "]", message);
             validator.validate(message, channelSchema, false);
             this.nonValidatingPublish(busName, channelName, message, completionCallback, callbackScope);
         };
@@ -101,18 +100,18 @@ define([
 
             callbacks.some(function (callback, index, list) {
                 var relevent = true, ret;
-                logger.info("Checking message: " + message + " for callback with scope: " + callback.cs + "...");
+                log.debug("Checking message for callback in scope [" + callback.cs + "]");
                 if (typeof (callback.fp) === 'function') {
                     relevent = callback.fp.call(callback.cs, message);
                 }
                 if (relevent && (callback.cs !== callbackScope || callback.csp === true)) {
-                    logger.info("Message passed filter and scope checks. Publishing now...");
+                    log.debug("Message passed filter and scope checks. Publishing now.", message);
                     ret = callback.fn.call(callback.cs, message);
                     if (typeof (ret) !== 'boolean') {
                         ret = false;
                     }
                     if (callback.uah === true) {
-                        logger.info("unsubscribeAfterHandle was true so unsubscribing now...");
+                        log.debug("unsubscribeAfterHandle was true so unsubscribing from scope [" + callback.cs + "]");
                         registry.unsubscribe(busName, channelName, callback.cs);
                     }
                     return ret;
@@ -120,7 +119,7 @@ define([
             });
 
             if (typeof (completionCallback) === 'function') {
-                logger.info("Calling completionCallback now...");
+                log.debug("Completion callback present, calling now for message", message);
                 completionCallback.call(callbackScope);
             }
         };
@@ -150,14 +149,14 @@ define([
          * @param captureSelfPublished - a boolean to indicate that self-published message should trigger.
          * @param unsubscribeAfterHandle - a boolean indicating that callBackScope should be unsubscribed after first handled message.
          */
-        this.subscribe = function (busName, channelName, receiveCallback, callBackScope, filterPredicate, captureSelfPublished, unsubscribeAfterHandle) {
+        this.subscribe = function (busName, channelName, receiveCallback, callbackScope, filterPredicate, captureSelfPublished, unsubscribeAfterHandle) {
 
             var callbacks = registry.getCallbacks(busName, channelName);
-            logger.info("Subscribing a new function to channel: " + channelName + " on bus: " + busName);
+            log.debug("Subscribing to channel [" + channelName + "] on bus [" + busName + "] with scope [" + callbackScope + "]");
             callbacks.push({
                 fn: receiveCallback,
                 fp: filterPredicate,
-                cs: callBackScope,
+                cs: callbackScope,
                 csp: captureSelfPublished,
                 uah: unsubscribeAfterHandle
             });
@@ -170,7 +169,7 @@ define([
          * @param scope - scope being unsubscribed.
          */
         this.unsubscribe = function (busName, channelName, scope) {
-            logger.info("Unsubscribing the object with scope: " + scope + " from channel: " + channelName + " on bus: " + busName);
+            log.debug("Unsubscribing from channel [" + channelName + "] on bus [" + busName + "] with scope [" + scope + "]");
             registry.unsubscribe(busName, channelName, scope);
         };
 
@@ -188,10 +187,10 @@ define([
          */
         this.validate = function (turnOn) {
             if (turnOn === true) {
-                logger.info("Turning schema validation on");
+                log.info("Turning schema validation on");
                 this.publish = this.validatingPublish;
             } else {
-                logger.info("Turning schema validation off");
+                log.info("Turning schema validation off");
                 this.publish = this.nonValidatingPublish;
             }
         };

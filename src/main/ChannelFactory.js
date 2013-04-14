@@ -5,14 +5,12 @@
 define([
     "./Channel",
     "./CoreApi",
-    "./Logger"
+    "./log"
 ], function (
     Channel,
     CoreApi,
-    OreLogger
+    log
 ) {
-
-    var logger = new OreLogger("info");
 
     return function (config) {
 
@@ -80,7 +78,7 @@ define([
             if (typeof (busName) === 'undefined') {
                 busName = 'global';
             }
-            logger.info("Getting channel " + channelName + " on bus " + busName + " with scope " + scope);
+            log.debug("Getting channel " + channelName + " on bus " + busName + " with scope " + scope);
             schema = this.resolveSchema(channelName);
             channel = new Channel();
             channel.channelName = channelName;
@@ -97,7 +95,7 @@ define([
             if (turnOn) {
                 pos = "on";
             }
-            logger.info("Turning validation " + pos);
+            log.info("Turning validation " + pos);
             this.coreapi.validate(turnOn);
         };
     };
