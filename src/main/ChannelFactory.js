@@ -18,6 +18,10 @@ define([
             setProps = function (myChannel, schema, scope, channelFactory, busName) {
                 myChannel.schema = schema;
 
+                myChannel.recreate = function (context) {
+                    return channelFactory.get(myChannel.channelName, context, busName);
+                };
+
                 myChannel.publish = function (msg, callback) {
                     channelFactory.coreapi.publish(busName, myChannel.channelName, msg, callback, scope);
                 };

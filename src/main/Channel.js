@@ -9,6 +9,12 @@ define([
     return function () {
 
         /**
+         * Recreates a new instance of this channel with the specified publish/subscribe context.
+         * @param context
+         */
+        this.recreate = function (context) {throw new Error("Not Implemented"); };
+
+        /**
          * Publish the given message on this channel.
          * @param message - message to publish
          * @param callback - option callback when publish is complete.

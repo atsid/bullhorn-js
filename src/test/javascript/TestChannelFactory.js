@@ -155,7 +155,40 @@ require([
             // Make sure that you can unsubscribe before receiving a message 
             // after subscribeOnce has been called 
             assertNoException("unsubscribe failed.", function () { channel.subscribeOnce(receiveFunc); channel.unsubscribe(); });
+        },
+
+        //make sure we can pass messages back and forth from a pair of channels, where one was generated using the recreate method
+        //we can assert on the callback scope to ensure the new context was set properly, and the values to ensure message passage
+        testChannelRecreate: function () {
+            var channelfactory = new Factory({resolver: this.resolver}),
+                scope1 = {name: "scope1"},
+                scope2 = {name: "scope2"},
+                channel1 = channelfactory.get("TestChannel", scope1),
+                channel2 = channel1.recreate(scope2),
+                value;
+
+            channel1.subscribe(function (msg) {
+                jstestdriver.console.log("got message in [" + this.name + "]: " + JSON.stringify(msg));
+                value = msg.value;
+                assertEquals("scope1", this.name);
+            });
+
+            channel2.publish({"value": 24});
+
+            assertEquals(24, value);
+
+            channel2.subscribe(function (msg) {
+                jstestdriver.console.log("got message in [" + this.name + "]: " + JSON.stringify(msg));
+                value = msg.value;
+                assertEquals("scope2", this.name);
+            });
+
+            channel1.publish({"value": 98});
+
+            assertEquals(98, value);
+
         }
+
     });
 });
 
