@@ -40,10 +40,15 @@ The get method returns new Channel instance objects that are tied to both a spec
 The Channel object is the core element that any units will work with in order to send and receive messages into bullhorn. The Channel object wraps calls to bullhorn, with instances holding reference information such as the channel name and the scope it is tied to, allowing for significant boilerplate reduction when pubsub is used.
 New channels should receive a reference to the factory that created them, in the event that they need to communicate with the factory for registration, lookups, or other communications that enable greater abstraction in the client API. Note that new Channels should never be instantiated directly by those who wish to publish or subscribe. This can be accomplished by not exposing a public constructor for Channels, rather, the ChannelFactory creates live objects with functions directly attached as needed. This makes the “Channel” object something like a private inlined class on the factory.
 
+####recreate
+Creates a new channel instance using the same parameters as this channel, but with a new callback context.
+
 ####publish
 Publishes the specified message on the channel, to the global pubsub bus. An optional callback can be passed that is executed when the message has reached all subscribers. The scope used for retrieving the instance will be used for callback execution.
+
 ####subscribe
 Subscribes a callback to the channel object. The scope used for retrieving the instance will be used for callback execution. Optional Boolean to ignore messages published by source agent if also subscribed to.
+
 ####unsubscribe
 Unsubscribes this channel instance and the callbacks associated with it. The scope used for retrieving the instance will be used for unsubscribing.
 
