@@ -8,7 +8,12 @@ define([
     Logger,
     module
 ) {
+
+    "use strict";
+
     var config = module.config(),
         logLevel = config && config.logLevel;
+
     return new Logger(logLevel || "warn");
+
 });

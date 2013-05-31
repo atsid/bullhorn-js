@@ -12,6 +12,8 @@ define([
     Validator
 ) {
 
+    "use strict";
+
     var validator = new Validator();
 
     return function (config) {
@@ -51,7 +53,7 @@ define([
 
             cropCallbacks: function (bus, channel, predicate) {
                 var callbacks = this.getCallbacks(bus, channel);
-                callbacks = callbacks.filter(function (item, index, list) {
+                callbacks = callbacks.filter(function (item) {
                     return predicate(item);
                 });
                 this.setCallbacks(bus, channel, callbacks);
@@ -98,7 +100,7 @@ define([
         this.nonValidatingPublish = function (busName, channelName, message, completionCallback, callbackScope) {
             var callbacks = registry.getCallbacks(busName, channelName);
 
-            callbacks.some(function (callback, index, list) {
+            callbacks.some(function (callback) {
                 var relevent = true, ret;
                 log.debug("Checking message for callback in scope [" + callback.cs + "]");
                 if (typeof (callback.fp) === 'function') {

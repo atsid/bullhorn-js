@@ -3,7 +3,9 @@ require([
 ], function (
     Factory
 ) {
-    
+
+    "use strict";
+
     var b;
     b = new TestCase("TestChannelFactory", {
         

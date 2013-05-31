@@ -12,6 +12,8 @@ define([
     log
 ) {
 
+    "use strict";
+
     return function (config) {
 
         var resolvers = [config.resolver],
