@@ -1,7 +1,27 @@
 {
     "name": "bullhorn-js",
-    "description": "Provides global pub/sub messaging.",
     "version": "1.0.2",
+    "description": "A client-side library for global topic-based messaging.",
+    "keywords": ["client-side", "messaging", "Publish/Subscribe", "channels", "JSON Schema", "json-schema", "schema", "Topic-based Messaging", "pubsub"],
+    "homepage": "http://atsid.github.io/",
+    "licenses": [
+        {
+            "type": "Apache2.0",
+            "url": "http://www.apache.org/licenses/LICENSE-2.0"
+        }
+    ],
+    "contributors": [
+        {
+            "name": "talkswithnumbers"
+        },
+        {
+            "name": "tom-servo"
+        }
+    ],
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/atsid/bullhorn-js.git"
+    },
     "dojoBuild": "profile.js",
     "dependencies": {
 	}
