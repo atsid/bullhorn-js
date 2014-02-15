@@ -1,5 +1,6 @@
-define([
-], function () {
+define(function () {
+
+    "use strict";
 
     /**
      * @class Validator
@@ -10,6 +11,7 @@ define([
             if (instance.nodata) {
                 throw new Error();
             }
+            return {valid: true};
         };
     };
 });

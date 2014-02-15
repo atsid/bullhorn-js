@@ -2,9 +2,7 @@
  * Channel interface
  * This interface describes the methods that are/must be implemented on a channel returned by ChannelFactory.
  */
-define([
-], function (
-) {
+define(function () {
 
     "use strict";
 

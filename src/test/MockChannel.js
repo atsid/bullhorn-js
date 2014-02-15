@@ -1,4 +1,7 @@
-define([], function () {
+define(function () {
+
+    "use strict";
+
     return {
         "schemaId": "TestData/TestChannel",
         "description": "Simple test schema",

@@ -1,3 +1,5 @@
+"use strict";
+
 var profile = (function () {
     var copyOnly = function (filename, mid) {
             var list = {

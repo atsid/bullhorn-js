@@ -1,0 +1,21 @@
+{
+  "name": "bullhorn-dev-build",
+  "version": "0.0.0",
+  "dependencies": {
+  },
+  "devDependencies": {
+    "grunt": "~0.4.2",
+    "mocha": "~1.14.0",
+    "chai": "*",
+    "grunt-contrib-jshint": "~0.7.2",
+    "grunt-mocha-test": "0.8.0",
+    "grunt-contrib-watch": "~0.5.3",
+    "grunt-karma": "*",
+    "karma": "*",
+    "karma-mocha": "*",
+    "karma-mocha-reporter": "*",
+    "karma-chai": "*",
+    "karma-requirejs": "*",
+    "karma-chrome-launcher": "*"
+  }
+}

@@ -1,5 +1,6 @@
-define([
-], function () {
+define(function () {
+
+    "use strict";
 
     /**
      * @class Validator
@@ -18,6 +19,6 @@ define([
          * @return {Object} Results object containing a valid property and an array of errors.
          * @throws Error
          */
-        this.validate = function (instance, schema, resolved, hideError) { return true; };
+        this.validate = function (instance, schema, resolved, hideError) { return {valid: true}; };
     };
 });

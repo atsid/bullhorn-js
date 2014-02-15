@@ -1,5 +1,6 @@
-define([
-], function () {
+define(function () {
+
+    "use strict";
 
     /**
      * @class Logger
