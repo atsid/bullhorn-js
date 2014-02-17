@@ -177,8 +177,7 @@ define([
 
         });
 
-        //TODO: this should allow one unsubscription to leave the second. there is no assert for that.
-        describe("Multiple callbacks for one subscriber on the same channel", function () {
+        describe("Multiple callbacks for one subscriber on the same channel, using scope", function () {
 
             var bh = new CoreApi();
 
@@ -193,9 +192,36 @@ define([
                 assert.isTrue(messageReceived2);
             });
 
-            it("unsubscribe from both subscriptions does not throw", function () {
+            it("unsubscribe from both subscriptions with scope does not throw", function () {
                 assert.doesNotThrow(function () { bh.unsubscribe("testbus", "test", testScope1); });
-                assert.doesNotThrow(function () { bh.unsubscribe("testbus", "test", testScope2); });
+                assert.doesNotThrow(function () { bh.unsubscribe("testbus", "test", testScope1); });
+            });
+
+        });
+
+        describe("Multiple callbacks for one subscriber on the same channel, using handles", function () {
+
+            var bh = new CoreApi(), handle1, handle2;
+
+            it("multiple subscriptions for a single scope do not throw", function () {
+                assert.doesNotThrow(function () { handle1 = bh.subscribe("testbus", "test", receiveFunc1, testScope1); });
+                assert.doesNotThrow(function () { handle2 = bh.subscribe("testbus", "test", receiveFunc2, testScope1); });
+            });
+
+            it("publish triggers callback on both subscriptions", function () {
+                bh.publish("testbus", "test", {'name': 'test message'});
+                assert.isTrue(messageReceived1);
+                assert.isTrue(messageReceived2);
+            });
+
+            it("unsubscribe from one subscription with handle does not throw", function () {
+                assert.doesNotThrow(function () { bh.unsubscribe("testbus", "test", testScope1, handle1); });
+            });
+
+            it("additional publish only triggers remaining callback", function () {
+                bh.publish("testbus", "test", {'name': 'test message'});
+                assert.isFalse(messageReceived1);
+                assert.isTrue(messageReceived2);
             });
 
         });
@@ -212,7 +238,7 @@ define([
 
         });
 
-        describe("Unsubscribe without subscribing", function () {
+        describe("Unsubscribe without first subscribing", function () {
 
             var bh = new CoreApi();
 
@@ -227,23 +253,44 @@ define([
 
             var bh = new CoreApi(),
                 firstCalled = false,
+                middleCalled = false,
                 lastCalled = false,
                 subscribeOnceCalled = false,
-                firstFunc = function (message) { firstCalled = true; },
-                lastFunc = function (message) { lastCalled = true; },
-                subscribeOnceFunc = function (message) { subscribeOnceCalled = true; },
+                firstFunc = function () { firstCalled = true; },
+                middleFunc = function () { middleCalled = true; },
+                lastFunc = function () { lastCalled = true; },
+                subscribeOnceFunc = function () { subscribeOnceCalled = true; },
                 firstScope = {scope: 1},
                 lastScope = {scope: 3},
                 subscribeOnceScope = {scope: 2};
 
-            bh.subscribe("testbus", "TestData/MockChannel", firstFunc, firstScope);
-            bh.subscribe("testbus", "TestData/MockChannel", subscribeOnceFunc, subscribeOnceScope, null, null, true, true);
-            bh.subscribe("testbus", "TestData/MockChannel", lastFunc, lastScope);
+            beforeEach(function () {
+                firstCalled = false;
+                middleCalled = false;
+                lastCalled = false;
+                subscribeOnceCalled = false;
+            });
+
+            it("two subscriptions on the subscribe-once scope, the second NOT subscribe-once", function () {
+                bh.subscribe("testbus", "TestData/MockChannel", firstFunc, firstScope);
+                bh.subscribe("testbus", "TestData/MockChannel", subscribeOnceFunc, subscribeOnceScope, null, null, true);
+                bh.subscribe("testbus", "TestData/MockChannel", middleFunc, subscribeOnceScope, null, null);
+                bh.subscribe("testbus", "TestData/MockChannel", lastFunc, lastScope);
+            });
 
             it("all subscribers should still receive message after a subscribe-once has fired", function () {
                 bh.publish("testbus", "TestData/MockChannel", {'data': 'test message'});
                 assert.isTrue(firstCalled);
                 assert.isTrue(subscribeOnceCalled);
+                assert.isTrue(middleCalled);
+                assert.isTrue(lastCalled);
+            });
+
+            it("all other subscribers should still receive message after a subscribe-once function has been removed", function () {
+                bh.publish("testbus", "TestData/MockChannel", {'data': 'test message'});
+                assert.isTrue(firstCalled);
+                assert.isFalse(subscribeOnceCalled);
+                assert.isTrue(middleCalled);
                 assert.isTrue(lastCalled);
             });
 
@@ -272,22 +319,22 @@ define([
             });
 
             it("publish with valid message does not throw", function () {
-                assert.doesNotThrow(function () { bh.publish("testbus", "TestData/MockChannel", {'data': 'test message'}, null, testScope1); });
+                assert.doesNotThrow(function () { bh.publish("testbus", "TestData/MockChannel", {'data': 'test message'}, null, testScope2); });
             });
 
             it("publish with valid message results in callback execution", function () {
-                bh.publish("testbus", "TestData/MockChannel", {'data': 'test message'}, null, testScope1);
+                bh.publish("testbus", "TestData/MockChannel", {'data': 'test message'}, null, testScope2);
                 assert.isTrue(messageReceived1);
             });
 
             it("publish with invalid message does throw", function () {
-                assert.throws(function () { bh.publish("testbus", "TestData/MockChannel", {'nodata': 'test message'}, null, testScope1); });
+                assert.throws(function () { bh.publish("testbus", "TestData/MockChannel", {'nodata': 'test message'}, null, testScope2); });
             });
 
             it("publish with invalid message does not result in callback execution", function () {
                 try
                 {
-                    bh.publish("testbus", "TestData/MockChannel", {'nodata': 'test message'}, null, testScope1);
+                    bh.publish("testbus", "TestData/MockChannel", {'nodata': 'test message'}, null, testScope2);
                 } catch (e) {}
                 assert.isFalse(messageReceived1);
             });

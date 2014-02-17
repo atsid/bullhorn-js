@@ -6,10 +6,12 @@
  */
 define([
     "./log",
-    "./Validator"
+    "./Validator",
+    "./uuid"
 ], function (
     log,
-    Validator
+    Validator,
+    uuid
 ) {
 
     "use strict";
@@ -23,6 +25,7 @@ define([
          * @type {Object}
          */
         var registry = {
+
             busHash: { },
 
             setMessageBus: function (bus, channels) {
@@ -38,30 +41,34 @@ define([
                 return localBus;
             },
 
-            setCallbacks: function (bus, channel, callbacks) {
-                this.getMessageBus(bus)[channel] = callbacks;
+            setHandlers: function (bus, channel, handlers) {
+                this.getMessageBus(bus)[channel] = handlers;
             },
 
-            getCallbacks: function (bus, channel) {
-                var callbacks = this.getMessageBus(bus)[channel];
-                if (!callbacks) {
-                    callbacks = [];
-                    this.setCallbacks(bus, channel, callbacks);
+            getHandlers: function (bus, channel) {
+                var handlers = this.getMessageBus(bus)[channel];
+                if (!handlers) {
+                    handlers = [];
+                    this.setHandlers(bus, channel, handlers);
                 }
-                return callbacks;
+                return handlers;
             },
 
-            cropCallbacks: function (bus, channel, predicate) {
-                var callbacks = this.getCallbacks(bus, channel);
-                callbacks = callbacks.filter(function (item) {
+            cropHandlers: function (bus, channel, predicate) {
+                var handlers = this.getHandlers(bus, channel);
+                handlers = handlers.filter(function (item) {
                     return predicate(item);
                 });
-                this.setCallbacks(bus, channel, callbacks);
+                this.setHandlers(bus, channel, handlers);
             },
 
-            unsubscribe: function (busName, channelName, scope) {
-                this.cropCallbacks(busName, channelName, function (callback) {
-                    return callback.cs !== scope;
+            unsubscribe: function (busName, channelName, scope, handle) {
+                this.cropHandlers(busName, channelName, function (handler) {
+                    if (handle) {
+                        return handler.h !== handle;
+                    } else {
+                        return handler.cs !== scope;
+                    }
                 });
             }
         };
@@ -98,23 +105,22 @@ define([
          * @param callbackScope - optional scope for the completionCallback param.
          */
         this.nonValidatingPublish = function (busName, channelName, message, completionCallback, callbackScope) {
-            var callbacks = registry.getCallbacks(busName, channelName);
-
-            callbacks.some(function (callback) {
-                var relevent = true, ret;
-                log.debug("Checking message for callback in scope [" + callback.cs + "]");
-                if (typeof (callback.fp) === 'function') {
-                    relevent = callback.fp.call(callback.cs, message);
+            var handlers = registry.getHandlers(busName, channelName);
+            handlers.some(function (handler) {
+                var relevant = true, ret;
+                log.debug("Checking message for handler in scope [" + handler.cs + "]");
+                if (typeof (handler.fp) === 'function') {
+                    relevant = handler.fp.call(handler.cs, message);
                 }
-                if (relevent && (callback.cs !== callbackScope || callback.csp === true)) {
-                    log.debug("Message passed filter and scope checks. Publishing now.", message);
-                    ret = callback.fn.call(callback.cs, message);
+                if (relevant && (handler.cs !== callbackScope || handler.csp === true)) {
+                    log.debug("Message passed filter and scope checks. Publishing now to callback.", message);
+                    ret = handler.fn.call(handler.cs, message);
                     if (typeof (ret) !== 'boolean') {
                         ret = false;
                     }
-                    if (callback.uah === true) {
-                        log.debug("unsubscribeAfterHandle was true so unsubscribing from scope [" + callback.cs + "]");
-                        registry.unsubscribe(busName, channelName, callback.cs);
+                    if (handler.uah === true) {
+                        log.debug("unsubscribeAfterHandle was true so unsubscribing from scope [" + handler.cs + "] and id [" + handler.h + "]");
+                        registry.unsubscribe(busName, channelName, handler.cs, handler.h);
                     }
                     return ret;
                 }
@@ -141,7 +147,7 @@ define([
         /**
          * Subscribe a "callbackScope" to a "channelName" on a "busName" by having the "receiveCallback" called when a message is
          * published on "channelName" "busName" combination and the message passes the filterPredicate. If
-         * "captureSelfPublished" is specified include message traffic published by "callbackScope". If "unsubscribeAfterHandle" is
+         * "captureSelfPublished" is specified include message traffic published by "callbackScope". If "unsubscribeAfterHandled" is
          * specified unsubscribe "callbackScope" after the first published message received.
          * @param busName - the name of bus a particular channel is on. Used to isolate message traffic.
          * @param channelName - the name of the channel to subscribe to.
@@ -149,30 +155,37 @@ define([
          * @param callBackScope - the scope to use when invoking the callback.
          * @param filterPredicate - a boolean returning function that can be used to filter messages based on content.
          * @param captureSelfPublished - a boolean to indicate that self-published message should trigger.
-         * @param unsubscribeAfterHandle - a boolean indicating that callBackScope should be unsubscribed after first handled message.
+         * @param unsubscribeAfterHandled - a boolean indicating that callBackScope should be unsubscribed after first handled message.
+         *
+         * @return {String} - a unique uuid for the subscription, which can be used to unsubscribe later.
          */
-        this.subscribe = function (busName, channelName, receiveCallback, callbackScope, filterPredicate, captureSelfPublished, unsubscribeAfterHandle) {
+        this.subscribe = function (busName, channelName, receiveCallback, callbackScope, filterPredicate, captureSelfPublished, unsubscribeAfterHandled) {
 
-            var callbacks = registry.getCallbacks(busName, channelName);
-            log.debug("Subscribing to channel [" + channelName + "] on bus [" + busName + "] with scope [" + callbackScope + "]");
-            callbacks.push({
+            var handle = uuid(),
+                handlers = registry.getHandlers(busName, channelName);
+            log.debug("Subscribing to channel [" + channelName + "] on bus [" + busName + "] with scope [" + callbackScope + "], subscription id: " + handle);
+            handlers.push({
                 fn: receiveCallback,
                 fp: filterPredicate,
                 cs: callbackScope,
+                h: handle,
                 csp: captureSelfPublished,
-                uah: unsubscribeAfterHandle
+                uah: unsubscribeAfterHandled
             });
+
+            return handle;
         };
 
         /**
-         * Remove all subscriptions for the given scope.
+         * Remove subscriptions for the given scope or handle.
          * @param busName - busName to operate on.
          * @param channelName - channelName to operate on.
          * @param scope - scope being unsubscribed.
+         * @param handle - individual handle to unsubscribe instead of the entire scope.
          */
-        this.unsubscribe = function (busName, channelName, scope) {
-            log.debug("Unsubscribing from channel [" + channelName + "] on bus [" + busName + "] with scope [" + scope + "]");
-            registry.unsubscribe(busName, channelName, scope);
+        this.unsubscribe = function (busName, channelName, scope, handle) {
+            log.debug("Unsubscribing from channel [" + channelName + "] on bus [" + busName + "] with scope [" + scope + "], with id: " + handle);
+            registry.unsubscribe(busName, channelName, scope, handle);
         };
 
         /**

@@ -5,10 +5,12 @@
 define([
     "./Channel",
     "./CoreApi",
+    "./uuid",
     "./log"
 ], function (
     Channel,
     CoreApi,
+    uuid,
     log
 ) {
 
@@ -16,8 +18,18 @@ define([
 
     return function (config) {
 
+        //the handle function encapsulates a single subscription, and can be used to unsubscribe
+        function Handle(channel, handle) {
+            this.unsubscribe = function () {
+                channel.unsubscribe(handle);
+            };
+        }
+
         var resolvers = [config.resolver],
             setProps = function (myChannel, schema, scope, channelFactory, busName) {
+
+                myChannel.handle = uuid();
+
                 myChannel.schema = schema;
 
                 myChannel.recreate = function (context) {
@@ -28,16 +40,18 @@ define([
                     channelFactory.coreapi.publish(busName, myChannel.channelName, msg, callback, scope);
                 };
 
-                myChannel.unsubscribe = function () {
-                    channelFactory.coreapi.unsubscribe(busName, myChannel.channelName, scope);
+                myChannel.unsubscribe = function (handle) {
+                    channelFactory.coreapi.unsubscribe(busName, myChannel.channelName, scope, handle);
                 };
 
                 myChannel.subscribe = function (callback, filterPredicate, captureSelfPublished) {
-                    channelFactory.coreapi.subscribe(busName, myChannel.channelName, callback, scope, filterPredicate, captureSelfPublished);
+                    var handle = channelFactory.coreapi.subscribe(busName, myChannel.channelName, callback, scope, filterPredicate, captureSelfPublished);
+                    return new Handle(myChannel, handle);
                 };
 
                 myChannel.subscribeOnce = function (callback, filterPredicate, captureSelfPublished) {
-                    channelFactory.coreapi.subscribe(busName, myChannel.channelName, callback, scope, filterPredicate, captureSelfPublished, true);
+                    var handle = channelFactory.coreapi.subscribe(busName, myChannel.channelName, callback, scope, filterPredicate, captureSelfPublished, true);
+                    return new Handle(myChannel, handle);
                 };
             };
 
