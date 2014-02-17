@@ -41,7 +41,13 @@ define([
                 };
 
                 myChannel.unsubscribe = function (handle) {
-                    channelFactory.coreapi.unsubscribe(busName, myChannel.channelName, scope, handle);
+                    //we expose this method publicly, but we only give access to the handle function itself
+                    //so if the consumer uses this function directly, we need to re-call it via the handle in order to pass in the actual uuid
+                    if (typeof handle === "object") {
+                        handle.unsubscribe();
+                    } else {
+                        channelFactory.coreapi.unsubscribe(busName, myChannel.channelName, scope, handle);
+                    }
                 };
 
                 myChannel.subscribe = function (callback, filterPredicate, captureSelfPublished) {
@@ -71,7 +77,7 @@ define([
 
         /**
          * CoreApi instance used by this factory exposed.
-         * @type {main.CoreApi}
+         * @type {CoreApi}
          */
         this.coreapi = new CoreApi({resolve: this.resolveSchema});
 

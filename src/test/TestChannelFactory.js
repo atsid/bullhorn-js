@@ -15,14 +15,15 @@ define([
             },
             callSucceeded = false,
             callSucceeded2 = false,
-            receiveFunc = function (message) { callSucceeded = true; },
-            receiveFunc2 = function (message) { callSucceeded2 = true; },
+            receiveFunc = function () { callSucceeded = true; },
+            receiveFunc2 = function () { callSucceeded2 = true; },
             testScope1 = {scope: 1, name: "scope1"},
             testScope2 = {scope: 2, name: "scope2"},
             message = {data: 'test'};
 
         beforeEach(function () {
             callSucceeded = false;
+            callSucceeded2 = false;
         });
 
         describe("Basic subscribe/publish cycle", function () {
@@ -159,6 +160,48 @@ define([
             it("unsubscribe from subscribe-once does not throw", function () {
                 assert.doesNotThrow(function () { channel.subscribeOnce(receiveFunc); channel.unsubscribe(); });
             });
+
+        });
+
+        describe("Subscribe-once with multiple handles", function () {
+            var channelfactory = new Factory({resolver: resolver}),
+                channel = channelfactory.get("MockChannel", testScope1),
+                handle1, handle2;
+
+            it("subscribe-once does not throw exception", function () {
+                assert.doesNotThrow(function () { handle1 = channel.subscribe(receiveFunc, null, true); });
+                assert.doesNotThrow(function () { handle2 = channel.subscribe(receiveFunc2, null, true); });
+            });
+
+            it("first publish results in both callbacks executing", function () {
+                channel.publish(message);
+                assert.isTrue(callSucceeded);
+                assert.isTrue(callSucceeded2);
+            });
+
+            it("unsubscribing one instance does not throw", function () {
+                channel.unsubscribe(handle1);
+            });
+
+            it("second publish only executes one remaining callback", function () {
+                channel.publish(message);
+                assert.isFalse(callSucceeded);
+                assert.isTrue(callSucceeded2);
+            });
+
+            it("unsubscribe with handle directly does not throw", function () {
+                handle2.unsubscribe();
+            });
+
+            it("final publish does not execute any callbacks", function () {
+                channel.publish(message);
+                assert.isFalse(callSucceeded);
+                assert.isFalse(callSucceeded2);
+            });
+
+        });
+
+        describe("Unsubscribe with handle", function () {
 
         });
 
