@@ -3,7 +3,7 @@ define(function () {
     "use strict";
 
     return {
-        "schemaId": "TestData/TestChannel",
+        "id": "test/MockChannel",
         "description": "Simple test schema",
         "type": "object",
         "properties": {

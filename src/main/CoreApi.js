@@ -20,6 +20,8 @@ define([
 
     return function (config) {
 
+        config = config || {};
+
         /**
          * internal registry for holding subscriptions.
          * @type {Object}
@@ -209,6 +211,8 @@ define([
                 this.publish = this.nonValidatingPublish;
             }
         };
+
+        this.validate(config.validate);
 
     };
 });

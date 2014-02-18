@@ -10,10 +10,7 @@ define([
 
     describe("Test ChannelFactory, ensuring that it correctly wraps CoreApi methods", function () {
 
-        var resolver = function () {
-                return MockChannel;
-            },
-            callSucceeded = false,
+        var callSucceeded = false,
             callSucceeded2 = false,
             receiveFunc = function () { callSucceeded = true; },
             receiveFunc2 = function () { callSucceeded2 = true; },
@@ -26,11 +23,46 @@ define([
             callSucceeded2 = false;
         });
 
+        describe("Get channel from factory", function () {
+
+            var resolverExecuted = false,
+                resolver = function () {
+                    resolverExecuted = true;
+                    return MockChannel;
+                },
+                channelfactory = new Factory({resolver: resolver});
+
+            beforeEach(function () {
+                resolverExecuted = false;
+            });
+
+            it("get using string name uses name resolver function", function () {
+                channelfactory.get("test/MockChannel", testScope1);
+                assert.isTrue(resolverExecuted);
+            });
+
+            it("get using string name returns correct channel from factory", function () {
+                var channel = channelfactory.get("test/MockChannel", testScope1);
+                assert.equal(channel.channelName, MockChannel.id);
+            });
+
+            it("get using channel object uses default object resolver function", function () {
+                channelfactory.get(MockChannel, testScope1);
+                assert.isFalse(resolverExecuted);
+            });
+
+            it("get using channel object returns correct channel from factory", function () {
+                var channel = channelfactory.get(MockChannel, testScope1);
+                assert.equal(channel.channelName, MockChannel.id);
+            });
+
+        });
+
         describe("Basic subscribe/publish cycle", function () {
 
-            var channelfactory = new Factory({resolver: resolver}),
-                channel = channelfactory.get("MockChannel", testScope1),
-                channelNewScope = channelfactory.get("MockChannel", testScope2);
+            var channelfactory = new Factory(),
+                channel = channelfactory.get(MockChannel, testScope1),
+                channelNewScope = channelfactory.get(MockChannel, testScope2);
 
             it("subscribe with defaults does not throw", function () {
                 assert.doesNotThrow(function () { channel.subscribe(receiveFunc); });
@@ -59,8 +91,8 @@ define([
 
         describe("Capture self-published messages", function () {
 
-            var channelfactory = new Factory({resolver: resolver}),
-                channel = channelfactory.get("MockChannel", testScope1);
+            var channelfactory = new Factory(),
+                channel = channelfactory.get(MockChannel, testScope1);
 
             it("subscribe with self-capture does not throw", function () {
                 assert.doesNotThrow(function () { channel.subscribe(receiveFunc, null, true); });
@@ -75,8 +107,8 @@ define([
 
         describe("Filtered messages", function () {
 
-            var channelfactory = new Factory({resolver: resolver}),
-                channel = channelfactory.get("MockChannel", testScope1),
+            var channelfactory = new Factory(),
+                channel = channelfactory.get(MockChannel, testScope1),
                 predicate = function (message) { return (message.data === 'allowed'); },
                 goodMessage = {data: 'allowed'},
                 badMessage = {data: 'notAllowed'};
@@ -98,8 +130,8 @@ define([
         });
 
         describe("Completion callback", function () {
-            var channelfactory = new Factory({resolver: resolver}),
-                channel = channelfactory.get("MockChannel", testScope1),
+            var channelfactory = new Factory(),
+                channel = channelfactory.get(MockChannel, testScope1),
                 publishCompleted = false,
                 completionFunc = function () { publishCompleted = true; };
 
@@ -116,10 +148,10 @@ define([
         });
 
         describe("Cross-traffic", function () {
-            var channelfactory = new Factory({resolver: resolver}),
-                channel = channelfactory.get("MockChannel", testScope1),
-                channelNewBus = channelfactory.get("MockChannel", testScope1, "anotherbus"),
-                channelNewScope = channelfactory.get("MockChannel", testScope2);
+            var channelfactory = new Factory(),
+                channel = channelfactory.get(MockChannel, testScope1),
+                channelNewBus = channelfactory.get(MockChannel, testScope1, "anotherbus"),
+                channelNewScope = channelfactory.get(MockChannel, testScope2);
 
             it("subscribe to default bus does not throw", function () {
                 assert.doesNotThrow(function () { channel.subscribe(receiveFunc); });
@@ -139,9 +171,9 @@ define([
 
         describe("Subscribe-once", function () {
 
-            var channelfactory = new Factory({resolver: resolver}),
-                channel = channelfactory.get("MockChannel", testScope1),
-                channelNewScope = channelfactory.get("MockChannel", testScope2);
+            var channelfactory = new Factory(),
+                channel = channelfactory.get(MockChannel, testScope1),
+                channelNewScope = channelfactory.get(MockChannel, testScope2);
 
             it("subscribe-once does not throw exception", function () {
                 assert.doesNotThrow(function () { channel.subscribeOnce(receiveFunc); });
@@ -164,8 +196,8 @@ define([
         });
 
         describe("Subscribe-once with multiple handles", function () {
-            var channelfactory = new Factory({resolver: resolver}),
-                channel = channelfactory.get("MockChannel", testScope1),
+            var channelfactory = new Factory(),
+                channel = channelfactory.get(MockChannel, testScope1),
                 handle1, handle2;
 
             it("subscribe-once does not throw exception", function () {
@@ -206,8 +238,8 @@ define([
         });
 
         describe("Channel re-creation", function () {
-            var channelfactory = new Factory({resolver: resolver}),
-                channel = channelfactory.get("MockChannel", testScope1),
+            var channelfactory = new Factory(),
+                channel = channelfactory.get(MockChannel, testScope1),
                 channelRecreated = channel.recreate(testScope2),
                 value;
 
@@ -231,6 +263,21 @@ define([
                 channel.publish({"value": 98});
 
                 assert.equal(98, value);
+            });
+
+        });
+
+        describe("Channel validation", function () {
+
+            var channelfactory = new Factory({validate: true});
+
+            it("factory passes on validation config", function () {
+                assert.isTrue(channelfactory.coreapi.isValidating());
+            });
+
+            it("CoreApi uses default resolver from ChannelFactory", function () {
+                var channel = channelfactory.get(MockChannel);
+                assert.equal(channel.channelName, MockChannel.id);
             });
 
         });

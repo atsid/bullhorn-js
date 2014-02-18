@@ -272,14 +272,14 @@ define([
             });
 
             it("two subscriptions on the subscribe-once scope, the second NOT subscribe-once", function () {
-                bh.subscribe("testbus", "TestData/MockChannel", firstFunc, firstScope);
-                bh.subscribe("testbus", "TestData/MockChannel", subscribeOnceFunc, subscribeOnceScope, null, null, true);
-                bh.subscribe("testbus", "TestData/MockChannel", middleFunc, subscribeOnceScope, null, null);
-                bh.subscribe("testbus", "TestData/MockChannel", lastFunc, lastScope);
+                bh.subscribe("testbus", "test/MockChannel", firstFunc, firstScope);
+                bh.subscribe("testbus", "test/MockChannel", subscribeOnceFunc, subscribeOnceScope, null, null, true);
+                bh.subscribe("testbus", "test/MockChannel", middleFunc, subscribeOnceScope, null, null);
+                bh.subscribe("testbus", "test/MockChannel", lastFunc, lastScope);
             });
 
             it("all subscribers should still receive message after a subscribe-once has fired", function () {
-                bh.publish("testbus", "TestData/MockChannel", {'data': 'test message'});
+                bh.publish("testbus", "test/MockChannel", {'data': 'test message'});
                 assert.isTrue(firstCalled);
                 assert.isTrue(subscribeOnceCalled);
                 assert.isTrue(middleCalled);
@@ -287,7 +287,7 @@ define([
             });
 
             it("all other subscribers should still receive message after a subscribe-once function has been removed", function () {
-                bh.publish("testbus", "TestData/MockChannel", {'data': 'test message'});
+                bh.publish("testbus", "test/MockChannel", {'data': 'test message'});
                 assert.isTrue(firstCalled);
                 assert.isFalse(subscribeOnceCalled);
                 assert.isTrue(middleCalled);
@@ -298,7 +298,7 @@ define([
 
         describe("Validation", function () {
 
-            var bh = new CoreApi({resolve: function (name) {
+            var bh = new CoreApi({resolve: function () {
                 return MockChannel;
             }});
 
@@ -315,26 +315,26 @@ define([
             });
 
             it("subscribing with validation on does not throw", function () {
-                assert.doesNotThrow(function () { bh.subscribe("testbus", "TestData/MockChannel", receiveFunc1, testScope1); });
+                assert.doesNotThrow(function () { bh.subscribe("testbus", "test/MockChannel", receiveFunc1, testScope1); });
             });
 
             it("publish with valid message does not throw", function () {
-                assert.doesNotThrow(function () { bh.publish("testbus", "TestData/MockChannel", {'data': 'test message'}, null, testScope2); });
+                assert.doesNotThrow(function () { bh.publish("testbus", "test/MockChannel", {'data': 'test message'}, null, testScope2); });
             });
 
             it("publish with valid message results in callback execution", function () {
-                bh.publish("testbus", "TestData/MockChannel", {'data': 'test message'}, null, testScope2);
+                bh.publish("testbus", "test/MockChannel", {'data': 'test message'}, null, testScope2);
                 assert.isTrue(messageReceived1);
             });
 
             it("publish with invalid message does throw", function () {
-                assert.throws(function () { bh.publish("testbus", "TestData/MockChannel", {'nodata': 'test message'}, null, testScope2); });
+                assert.throws(function () { bh.publish("testbus", "test/MockChannel", {'nodata': 'test message'}, null, testScope2); });
             });
 
             it("publish with invalid message does not result in callback execution", function () {
                 try
                 {
-                    bh.publish("testbus", "TestData/MockChannel", {'nodata': 'test message'}, null, testScope2);
+                    bh.publish("testbus", "test/MockChannel", {'nodata': 'test message'}, null, testScope2);
                 } catch (e) {}
                 assert.isFalse(messageReceived1);
             });
