@@ -7,5 +7,5 @@
         bullhorn: "."
     },
     name: "bullhorn/ChannelFactory",
-    out: "bullhorn-1.0.4-min.js"
+    out: "bullhorn-min.js"
 })
