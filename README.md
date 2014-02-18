@@ -47,31 +47,28 @@ Creates a new channel instance using the same parameters as this channel, but wi
 Publishes the specified message on the channel, to the global pubsub bus. An optional callback can be passed that is executed when the message has reached all subscribers. The scope used for retrieving the instance will be used for callback execution.
 
 ####subscribe
-Subscribes a callback to the channel object. The scope used for retrieving the instance will be used for callback execution. Optional Boolean to ignore messages published by source agent if also subscribed to.
+Subscribes a callback to the channel object. The scope used for retrieving the instance will be used for callback execution. Optional Boolean to ignore messages published by source agent if also subscribed to. Returns a handle object which can be used to unsubscribe this individual subscription later.
 
 ####unsubscribe
-Unsubscribes this channel instance and the callbacks associated with it. The scope used for retrieving the instance will be used for unsubscribing.
+Unsubscribes this channel instance and the callbacks associated with it. The scope used for retrieving the instance will be used for unsubscribing. Optionally a handle object can be passed, to limit unsubscription to just that one subscribe instance (instead of all callbacks associated with the scope).
 
 ##OOP API Code Examples
 The following code examples illustrate instantiating a ChannelFactory and mapping it to project-specific aliases, as well as retrieving Channel instances and working with them from an agent.
 ```
 //instantiate factory and map to aliases for access
-//this would happen in some app setup/bootstrap area
-(function () {
-	var factory = new ChannelFactory(“schema.channels”);
-	channels.channelFactory = factory;
-channels.get = factory.get;
-}());
+//(this would likely happen in some app setup/bootstrap area)
+var factory = new ChannelFactory();
+
 //create new channels for publish/subscribe
 function setupChannels() {
-	var documentClosed = channels.get(“DocumentClosed”, this);
-	documentClosed.subscribe(this.handleDocumentClosed);
+    var documentClosed = factory.get(DocumentClosed, this);
+    documentClosed.subscribe(this.handleDocumentClosed);
 
-	var documentOpened = channels.get(“DocumentOpened”, this);
-	documentOpened.publish({documentId: 1});
+    var documentOpened = factory.get(DocumentOpened, this);
+    documentOpened.publish({documentId: 1});
 
-	//later…
-documentClosed.unsubscribe();
+    //later…
+    documentClosed.unsubscribe();
 }
 ```
 ##License

@@ -11,7 +11,7 @@ This is a simple POM file to generate a jar file containing the library for publ
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.atsid</groupId>
 	<artifactId>bullhorn-js</artifactId>
-	<version>1.0.3</version>
+	<version>1.0.4</version>
 	<packaging>jar</packaging>
 
 	<!-- PROJECT PROPERTIES -->
