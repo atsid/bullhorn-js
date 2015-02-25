@@ -1,22 +1,48 @@
 {
-  "name": "bullhorn-dev-build",
-  "version": "0.0.0",
-  "dependencies": {
-  },
-  "devDependencies": {
-    "grunt": "~0.4.2",
-    "mocha": "~1.14.0",
-    "chai": "*",
-    "requirejs": "*",
-    "grunt-contrib-jshint": "~0.7.2",
-    "grunt-mocha-test": "0.8.0",
-    "grunt-contrib-watch": "~0.5.3",
-    "grunt-karma": "*",
-    "karma": "*",
-    "karma-mocha": "*",
-    "karma-mocha-reporter": "*",
-    "karma-chai": "*",
-    "karma-requirejs": "*",
-    "karma-chrome-launcher": "*"
-  }
+    "name": "bullhorn-js",
+    "version": "1.0.4",
+    "description": "A client-side library for global topic-based messaging.",
+    "keywords": ["client-side", "messaging", "Publish/Subscribe", "channels", "JSON Schema", "json-schema", "schema", "Topic-based Messaging", "pubsub"],
+    "homepage": "http://atsid.github.io/",
+    "licenses": [
+        {
+            "type": "Apache2.0",
+            "url": "http://www.apache.org/licenses/LICENSE-2.0"
+        }
+    ],
+    "contributors": [
+        {
+            "name": "natoverse"
+        },
+        {
+            "name": "tom-servo"
+        }
+    ],
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/atsid/bullhorn-js.git"
+    },
+    "scripts": {
+        "test": "grunt lint test"
+    },
+    "dependencies": {
+    },
+    "devDependencies": {
+        "grunt": "0.4.2",
+        "mocha": "1.14.0",
+        "chai": "2.1.0",
+        "requirejs": "2.1.16",
+        "grunt-contrib-jshint": "0.7.2",
+        "grunt-mocha-test": "0.8.0",
+        "grunt-contrib-watch": "0.5.3",
+        "grunt-contrib-requirejs": "0.4.4",
+        "grunt-karma": "0.10.1",
+        "karma": "0.12.31",
+        "karma-mocha": "0.1.10",
+        "karma-mocha-reporter": "1.0.0",
+        "karma-chai": "0.1.0",
+        "karma-requirejs": "0.2.2",
+        "karma-chrome-launcher": "0.1.7",
+        "karma-phantomjs-launcher": "0.1.4"
+    }
 }
