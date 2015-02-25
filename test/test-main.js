@@ -20,8 +20,8 @@ requirejs.config({
     baseUrl: '/base',
 
     paths: {
-        'bullhorn': 'src/main',
-        'test': 'src/test'
+        'bullhorn': 'js',
+        'test': 'test'
     },
 
     map: {
