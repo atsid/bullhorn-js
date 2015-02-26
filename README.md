@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/atsid/bullhorn-js.svg?branch=master)](https://travis-ci.org/atsid/bullhorn-js)
+
 # Topic-based Messaging (bullhorn-js)
 
 ##Overview
