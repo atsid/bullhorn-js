@@ -81,6 +81,14 @@ define([
          * @return {*}
          */
         this.resolveSchema = function (name) {
+            
+        	//The case we don't want to lookup and utilize a schema
+            if(name == 'default'){
+            	return {
+            	    "id": "schema/DefaultChannel"
+            	}
+            }
+            
             var schema;
             resolvers.some(function (res) {
                 schema = res(name);
@@ -128,6 +136,18 @@ define([
             setProps(channel, schema, scope, this, busName);
             return channel;
         };
+        
+        /**
+         * Retrieve a default Channel object based on the passed scope and bus
+         * @param scope - the scope identifying the subscriber and used as the callback
+         * scope for subscriptions.
+         * @param busName - the optional bus to associate the channel with.
+         * @return {*}
+         */
+        
+        this.getChannelWithDefaultSchema = function (scope, busName){   
+        	return this.get("default", scope, busName);
+        }
 
         /**
          * Turn validation on or off for this factory, delegates to core api.
