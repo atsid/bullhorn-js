@@ -87,11 +87,11 @@ define([
                 schema = res(name);
                 return schema;
             }, this);
-            
+                        
           //The case we don't want to lookup and utilize a schema
             //*
             if (schema === undefined) {
-                return { "id": "default/DefaultChannel" };
+                return { "id": name };
             }
             //*/
             return schema;
