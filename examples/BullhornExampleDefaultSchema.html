@@ -60,9 +60,9 @@ Most of the code is setting up AMD (which becomes negligible in larger projects)
                 btn = document.getElementsByName("Sender")[0],
 
                 // Retrieve channels for each "scope" wanting to operate on the channel
-                originatingChannel = cfact.getChannelWithDefaultSchema(msg),
-                receiver1Channel = cfact.getChannelWithDefaultSchema(sub1),
-                receiver2Channel = cfact.getChannelWithDefaultSchema(sub2);
+                originatingChannel = cfact.get("default/defaultChannel", msg),
+                receiver1Channel = cfact.get("default/defaultChannel", sub1),
+                receiver2Channel = cfact.get("default/defaultChannel", sub2);
 
             // Channels are "scoped" based on the second argument of the
             // factory's get method, so subscriber callbacks are called in
