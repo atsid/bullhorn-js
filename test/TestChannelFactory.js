@@ -56,7 +56,8 @@ define([
                 assert.equal(channel.channelName, MockChannel.id);
             });
             
-            it("get using a string name returns the default channel fro; factory", function () {
+            it("get using a string name returns the default channel from factory", function () {
+                var channelfactory = new Factory({});
                 var channel = channelfactory.get("test/DefaultChannel", testScope1);
                 assert.equal(channel.channelName, "default/DefaultChannel");
             });
