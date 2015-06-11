@@ -90,10 +90,8 @@ define([
             
           //The case we don't want to lookup and utilize a schema
             //*
-            if(schema == undefined){
-            	return {
-            	    "id": "default/DefaultChannel"
-            	}
+            if (schema === undefined) {
+                return { "id": "default/DefaultChannel" };
             }
             //*/
             return schema;
@@ -139,6 +137,7 @@ define([
             return channel;
         };
         
+
         /**
          * Turn validation on or off for this factory, delegates to core api.
          * @param turnOn - boolean
