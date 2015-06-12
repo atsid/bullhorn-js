@@ -38,22 +38,10 @@ Most of the code is setting up AMD (which becomes negligible in larger projects)
     <script>
         // Use AMD to define and load the resources we depend on.
         require([
-            "bullhorn/ChannelFactory",
-            "schema/ExampleChannel"
-        ], function (
-                ChannelFactory,
-                ExampleChannel
-        ) {
+            "bullhorn/ChannelFactory"
+        ], function (ChannelFactory) {
             // Create a channel factory.
-            var cfact = new ChannelFactory({
-                    // "resolver" is used by the factory to find schemas based on names.
-                    // resolve schema by mapping it to the dependency where it was already loaded.
-                    resolver: function (name) {
-                        if (name === "schema/ExampleChannel") {
-                            return ExampleChannel;
-                        }
-                    }
-                }),
+            var cfact = new ChannelFactory({}),
                 sub1 = document.getElementsByName("FirstSubscriber")[0],
                 sub2 = document.getElementsByName("SecondSubscriber")[0],
                 msg = document.getElementsByName("SenderText")[0],
