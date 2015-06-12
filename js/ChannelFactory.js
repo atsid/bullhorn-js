@@ -81,11 +81,19 @@ define([
          * @return {*}
          */
         this.resolveSchema = function (name) {
+                   
             var schema;
             resolvers.some(function (res) {
                 schema = res(name);
                 return schema;
             }, this);
+                        
+          //The case we don't want to lookup and utilize a schema
+            //*
+            if (schema === undefined) {
+                return { "id": name };
+            }
+            //*/
             return schema;
         };
 
@@ -128,6 +136,7 @@ define([
             setProps(channel, schema, scope, this, busName);
             return channel;
         };
+        
 
         /**
          * Turn validation on or off for this factory, delegates to core api.

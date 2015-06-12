@@ -1,0 +1,81 @@
+<!--
+Simple sample page to demonstrate the use of topic-based messaging with bullhorn.
+It retrieves three instances of a channel defined without setting a schema (a default one will be used), publishes on one and
+subscribes on the other two.
+It is intended to be loaded directly from the file system in this directory.
+Most of the code is setting up AMD (which becomes negligible in larger projects).
+-->
+<!DOCTYPE html>
+<html>
+<head>
+    <!--
+    Include only an amd loader.
+    -->
+    <script src="require.js"></script>
+    <script>
+        // Configure AMD to find things.
+        var path = location.pathname.replace(/\/[^/]+$/, '');
+        require.config({
+            baseUrl: "./",
+            paths: {
+                bullhorn: "../js",
+                example: "."
+            },
+            // remap to use a third party validator.
+            map: {
+                "*": {
+                    "bullhorn/Validator": "example/Validator"
+                }
+            },
+            config: {
+                "bullhorn/log": {
+                    logLevel: "debug"
+                }
+            }
+        });
+    </script>
+    <script>
+        // Use AMD to define and load the resources we depend on.
+        require([
+            "bullhorn/ChannelFactory"
+        ], function (ChannelFactory) {
+            // Create a channel factory.
+            var cfact = new ChannelFactory({}),
+                sub1 = document.getElementsByName("FirstSubscriber")[0],
+                sub2 = document.getElementsByName("SecondSubscriber")[0],
+                msg = document.getElementsByName("SenderText")[0],
+                btn = document.getElementsByName("Sender")[0],
+
+                // Retrieve channels for each "scope" wanting to operate on the channel
+                originatingChannel = cfact.get("default/defaultChannel", msg),
+                receiver1Channel = cfact.get("default/defaultChannel", sub1),
+                receiver2Channel = cfact.get("default/defaultChannel", sub2);
+
+            // Channels are "scoped" based on the second argument of the
+            // factory's get method, so subscriber callbacks are called in
+            // that scope.
+            receiver1Channel.subscribe(function (message) {
+                this.innerHTML = message.text;
+            });
+            receiver2Channel.subscribe(function (message) {
+                this.innerHTML = message.text;
+            });
+
+            // publish a message on the channel, receivers should get it.
+            btn.onclick = function (evt) {
+                originatingChannel.publish( { text: msg.value});
+            }
+
+         });
+    </script>
+
+</head>
+<body>
+    <button name="Sender">Send</button>
+    <textarea name="SenderText"></textarea>
+    <div>FirstSubscriber</div>
+    <div name="FirstSubscriber">Empty</div>
+    <div>SecondSubscriber</div>
+    <div name="SecondSubscriber">Empty</div>
+</body>
+</html>
