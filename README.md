@@ -1,6 +1,7 @@
 [![Build Status](https://travis-ci.org/atsid/bullhorn-js.svg?branch=master)](https://travis-ci.org/atsid/bullhorn-js)
 [![Code Climate](https://codeclimate.com/github/atsid/bullhorn-js/badges/gpa.svg)](https://codeclimate.com/github/atsid/bullhorn-js)
 [![Dependency Status](https://david-dm.org/atsid/bullhorn-js.svg)](https://david-dm.org/atsid/bullhorn-js)
+[![Dev Dependency Status](https://david-dm.org/atsid/bullhorn-js/dev-status.svg)](https://david-dm.org/atsid/bullhorn-js)
 
 # Topic-based Messaging (bullhorn-js)
 
